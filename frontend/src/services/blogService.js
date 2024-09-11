@@ -12,6 +12,13 @@ const getAll = async () => {
   return response.data;
 };
 
+const getAllSortedByLikes = async () => {
+  const response = await axios.get(baseUrl);
+  const blogs = response.data;
+
+  return blogs.sort((a, b) => b.likes - a.likes);
+};
+
 const create = async newObject => {
   const config = {
     headers: { Authorization: token },
@@ -37,4 +44,4 @@ const deleteBlog = async (id, token) => {
   return response.data;
 };
 
-export default { getAll, create, update, deleteBlog, setToken }
+export default { getAll, getAllSortedByLikes, create, update, deleteBlog, setToken }

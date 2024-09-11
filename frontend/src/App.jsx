@@ -24,7 +24,7 @@ const App = () => {
 
   useEffect(() => {
     if (user) {
-      blogService.getAll().then((initialBlogs) => {
+      blogService.getAllSortedByLikes().then((initialBlogs) => {
         setBlogs(initialBlogs);
       });
     }
@@ -68,7 +68,7 @@ const App = () => {
 
   const handleLikeBlog = async (id) => {
     const blogToLike = blogs.find((blog) => blog.id === id);
-    console.log({ blogToLike });
+    
     try {
       const updatedBlog = {
         ...blogToLike,
@@ -76,7 +76,13 @@ const App = () => {
         user: blogToLike.user
       };
       const returnedBlog = await blogService.update(id, updatedBlog);
-      setBlogs((prevBlogs) => prevBlogs.map(blog => blog.id !== id ? blog : returnedBlog));
+
+      setBlogs((prevBlogs) => 
+        prevBlogs
+          .map(blog => blog.id !== id ? blog : returnedBlog)
+          .sort((a, b) => b.likes - a.likes) // sort by likes in descending order
+      );
+
       handleNotification(`Blog "${returnedBlog.title}" liked successfully`, 'success');
     } catch (error) {
       handleNotification('Error liking blog', 'error');
@@ -88,7 +94,13 @@ const App = () => {
     if (window.confirm(`Are you sure you want to delete "${blogToDelete.title}"?`)) {
       try {
         await blogService.deleteBlog(id, user.token);
-        setBlogs(blogs.filter((blog) => blog.id !== id));
+
+        setBlogs((prevBlogs) => 
+          prevBlogs
+            .filter(blog => blog.id !== id)
+            .sort((a, b) => b.likes - a.likes)
+        );
+
         handleNotification(`Blog "${blogToDelete.title}" deleted successfully`, 'success');
       } catch (error) {
         handleNotification('Error deleting blog', 'error');
