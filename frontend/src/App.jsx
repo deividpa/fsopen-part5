@@ -72,7 +72,8 @@ const App = () => {
     try {
       const updatedBlog = {
         ...blogToLike,
-        likes: blogToLike.likes + 1
+        likes: blogToLike.likes + 1,
+        user: blogToLike.user
       };
       const returnedBlog = await blogService.update(id, updatedBlog);
       setBlogs((prevBlogs) => prevBlogs.map(blog => blog.id !== id ? blog : returnedBlog));
