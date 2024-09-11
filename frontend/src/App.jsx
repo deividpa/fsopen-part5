@@ -66,6 +66,22 @@ const App = () => {
     }
   };
 
+  const handleLikeBlog = async (id) => {
+    const blogToLike = blogs.find((blog) => blog.id === id);
+    console.log({ blogToLike });
+    try {
+      const updatedBlog = {
+        ...blogToLike,
+        likes: blogToLike.likes + 1
+      };
+      const returnedBlog = await blogService.update(id, updatedBlog);
+      setBlogs((prevBlogs) => prevBlogs.map(blog => blog.id !== id ? blog : returnedBlog));
+      handleNotification(`Blog "${returnedBlog.title}" liked successfully`, 'success');
+    } catch (error) {
+      handleNotification('Error liking blog', 'error');
+    }
+  };
+
   const handleDeleteBlog = async (id) => {
     const blogToDelete = blogs.find((blog) => blog.id === id);
     if (window.confirm(`Are you sure you want to delete "${blogToDelete.title}"?`)) {
@@ -99,7 +115,12 @@ const App = () => {
 
       <h3>Blog List</h3>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog 
+          key={blog.id} 
+          blog={blog}
+          onLikeBlog={handleLikeBlog} 
+          onDeleteBlog={handleDeleteBlog} 
+        />
       ))}
     </div>
   );

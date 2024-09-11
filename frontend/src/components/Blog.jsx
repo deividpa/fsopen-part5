@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, onLikeBlog, onDeleteBlog }) => {
   const [visible, setVisible] = useState(false);
 
   const blogStyle = {
@@ -22,12 +22,14 @@ const Blog = ({ blog }) => {
         <button onClick={toggleVisibility}>
           {visible ? 'hide' : 'view'}
         </button>
+        <button onClick={() => onDeleteBlog(blog.id)}>Delete</button>
       </div>
       {visible && (
         <div>
           <p>{blog.url}</p>
           <p>
-            likes: {blog.likes} <button>like</button>
+            likes: {blog.likes}
+            <button onClick={() => onLikeBlog(blog.id)} style={{marginLeft: 5}}>like</button>
           </p>
           <p>{blog.user.name}</p>
         </div>
@@ -38,6 +40,8 @@ const Blog = ({ blog }) => {
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
+  onLikeBlog: PropTypes.func.isRequired,
+  onDeleteBlog: PropTypes.func.isRequired,
 };
 
 export default Blog;
