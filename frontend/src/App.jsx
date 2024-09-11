@@ -5,6 +5,7 @@ import Notification from './components/Notification';
 import LoginForm from './components/LoginForm';
 import BlogForm from './components/BlogForm';
 import Togglable from './components/Togglable';
+import Blog from './components/Blog';
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -97,11 +98,8 @@ const App = () => {
       </Togglable>
 
       <h3>Blog List</h3>
-      {blogs.map(blog => (
-        <div key={blog.id}>
-          {blog.title} by {blog.author}
-          <button onClick={() => handleDeleteBlog(blog.id)}>Delete</button>
-        </div>
+      {blogs.map((blog) => (
+        <Blog key={blog.id} blog={blog} />
       ))}
     </div>
   );
