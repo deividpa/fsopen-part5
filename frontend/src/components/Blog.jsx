@@ -18,7 +18,7 @@ const Blog = ({ blog, onLikeBlog, onDeleteBlog }) => {
   return (
     <div style={blogStyle} className="blog">
       <div>
-        <span>{blog.title}</span>
+        <span style={{marginRight: 3}}>{blog.title}</span>
         <span style={{marginRight: 3}}>{blog.author}</span>
         <button onClick={toggleVisibility}>
           {visible ? 'hide' : 'view'}
@@ -47,9 +47,12 @@ Blog.propTypes = {
     author: PropTypes.string,
     url: PropTypes.string.isRequired,
     likes: PropTypes.number,
-    user: PropTypes.shape({
-      name: PropTypes.string.isRequired,
-    }).isRequired,
+    user: PropTypes.oneOfType([
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+      }),
+      PropTypes.string,
+    ]).isRequired,
   }).isRequired,
   onLikeBlog: PropTypes.func.isRequired,
   onDeleteBlog: PropTypes.func.isRequired,
