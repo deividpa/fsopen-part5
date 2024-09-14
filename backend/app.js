@@ -1,4 +1,5 @@
 require('express-async-errors')
+require('dotenv').config()
 
 const express = require('express')
 const mongoose = require('mongoose')
@@ -34,6 +35,11 @@ app.use('/api/blogs', blogsRouter)
 app.use('/api/users', usersRouter)
 /* router /api/login */
 app.use('/api/login', loginRouter)
+
+if (process.env.NODE_ENV === 'test') {
+  const testingRouter = require('./controllers/testingController')
+  app.use('/api/testing', testingRouter)
+}
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)

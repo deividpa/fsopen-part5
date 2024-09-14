@@ -110,9 +110,12 @@ const App = () => {
 
   if (!user) {
     return (
-      <Togglable buttonLabel='login'>
-        <LoginForm onLogin={handleLogin} />
-      </Togglable>
+      <div>
+        <Notification type={notification.type} content={notification.content} />
+        <Togglable buttonLabel='show login'>
+          <LoginForm onLogin={handleLogin} />
+        </Togglable>
+      </div>
     )
   }
 
