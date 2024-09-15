@@ -12,11 +12,15 @@ describe('Blog app', () => {
     
         await request.post('http://localhost:3003/api/users', { data: newUser })
 
-        await page.goto('http://localhost:5173')
+        const anotherUser = {
+            username: 'anotherUser',
+            password: 'anotherPassword',
+            name: 'Another User'
+        };
 
-        await page.evaluate(() => {
-            window.localStorage.clear()
-        })
+        await request.post('http://localhost:3003/api/users', { data: anotherUser });
+    
+        await page.goto('http://localhost:5173');
     })
   
     test('Login form is shown', async ({ page }) => {
@@ -58,25 +62,25 @@ describe('Blog app', () => {
 
     describe('When logged in', () => {
         beforeEach(async ({ page }) => {
-          await page.locator('button', { hasText: 'show login' }).click()
-          await page.fill('input[name="Username"]', 'davidTest')
-          await page.fill('input[name="Password"]', '123456')
-          await page.getByText('Login', { exact: true }).click()
+            await page.locator('button', { hasText: 'show login' }).click()
+            await page.fill('input[name="Username"]', 'davidTest')
+            await page.fill('input[name="Password"]', '123456')
+            await page.getByText('Login', { exact: true }).click()
         })
   
         test('a new blog can be created', async ({ page }) => {
-          await page.locator('button', { hasText: 'Create new blog' }).click()
-  
-          await page.fill('input[placeholder="Enter blog title"]', 'Test Blog Title with Playwright')
-          await page.fill('input[placeholder="Enter blog author"]', 'Test Author')
-          await page.fill('input[placeholder="Enter blog URL"]', 'http://testurlplaywright.com')
-  
-          await page.locator('#createBlog').click()
-  
-          // Check that the blog appears in the list
-          const successMessage = await page.locator('.success')
-          await expect(successMessage)
-            .toHaveText(/Blog "Test Blog Title with Playwright" by Test Author added successfully/)
+            await page.locator('button', { hasText: 'Create new blog' }).click()
+    
+            await page.fill('input[placeholder="Enter blog title"]', 'Test Blog Title with Playwright')
+            await page.fill('input[placeholder="Enter blog author"]', 'Test Author')
+            await page.fill('input[placeholder="Enter blog URL"]', 'http://testurlplaywright.com')
+    
+            await page.locator('#createBlog').click()
+    
+            // Check that the blog appears in the list
+            const successMessage = await page.locator('.success')
+            await expect(successMessage)
+                .toHaveText(/Blog "Test Blog Title with Playwright" by Test Author added successfully/)
         })
 
         test('a blog can be liked', async ({ page }) => {
@@ -127,6 +131,34 @@ describe('Blog app', () => {
             const blog = await page.locator('span', { hasText: 'Blog to be deleted' })
             await expect(blog).not.toBeVisible()
         })
-        
+
+        test('only the user who added the blog can see the delete button', async ({ page }) => {
+            // Create a new blog with the first user
+            await page.locator('button', { hasText: 'Create new blog' }).click();
+            await page.fill('input[placeholder="Enter blog title"]', 'Test Blog for Delete Button Visibility');
+            await page.fill('input[placeholder="Enter blog author"]', 'Test Author');
+            await page.fill('input[placeholder="Enter blog URL"]', 'http://testvisibilityurl.com');
+            await page.locator('#createBlog').click();
+      
+            // Show blog details to access the delete button
+            await page.locator('button', { hasText: 'View' }).click();
+      
+            // Ensure the delete button is visible for the creator
+            const deleteButton = await page.locator('button', { hasText: 'Delete' });
+            await expect(deleteButton).toBeVisible();
+      
+            // Log out
+            await page.getByText('Logout').click();
+      
+            // Log in as another user
+            await page.locator('button', { hasText: 'show login' }).click();
+            await page.fill('input[name="Username"]', 'anotherUser');
+            await page.fill('input[name="Password"]', 'anotherPassword');
+            await page.getByText('Login', { exact: true }).click();
+      
+            // Ensure the delete button is not visible for the non-creator
+            await page.locator('button', { hasText: 'View' }).click();
+            await expect(deleteButton).not.toBeVisible();
+        });
     })
 })

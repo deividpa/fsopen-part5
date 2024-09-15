@@ -41,7 +41,7 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
     author,
     url,
     likes: likes || 0,
-    user: user._id
+    user: user
   })
 
   const savedBlog = await blog.save()
