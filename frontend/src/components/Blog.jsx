@@ -27,10 +27,13 @@ const Blog = ({ blog, onLikeBlog, onDeleteBlog }) => {
       {visible && (
         <div>
           <p>{blog.url}</p>
-          <p>
-            <span>likes: {blog.likes}</span>
+          <div>
+            <div>
+              <span style={{marginRight: 3}}>likes:</span>
+              <span className='likes-count'>{blog.likes}</span>
+            </div>
             <button onClick={() => onLikeBlog(blog.id)} style={{ marginLeft: 5 }}>like</button>
-          </p>
+          </div>
           <p>{blog.user.name}</p>
           <div>
             <button onClick={() => onDeleteBlog(blog.id)}>Delete</button>

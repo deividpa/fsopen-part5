@@ -16,12 +16,12 @@ describe('Blog app', () => {
 
         await page.evaluate(() => {
             window.localStorage.clear()
-        });
+        })
     })
   
     test('Login form is shown', async ({ page }) => {
-        const togglableLoginButton = await page.locator('button', { hasText: 'show login' });
-        await expect(togglableLoginButton).toBeVisible();
+        const togglableLoginButton = await page.locator('button', { hasText: 'show login' })
+        await expect(togglableLoginButton).toBeVisible()
     })
   
     describe('Login', () => {
@@ -74,9 +74,59 @@ describe('Blog app', () => {
           await page.locator('#createBlog').click()
   
           // Check that the blog appears in the list
-          const successMessage = await page.locator('.success');
+          const successMessage = await page.locator('.success')
           await expect(successMessage)
-            .toHaveText(/Blog "Test Blog Title with Playwright" by Test Author added successfully/);
+            .toHaveText(/Blog "Test Blog Title with Playwright" by Test Author added successfully/)
         })
+
+        test('a blog can be liked', async ({ page }) => {
+            await page.locator('button', { hasText: 'Create new blog' }).click()
+  
+            await page.fill('input[placeholder="Enter blog title"]', 'Test Blog Title with Playwright')
+            await page.fill('input[placeholder="Enter blog author"]', 'Test Author')
+            await page.fill('input[placeholder="Enter blog URL"]', 'http://testurlplaywright.com')
+  
+            await page.locator('#createBlog').click()
+  
+            // Like the blog
+            await page.locator('button', { hasText: 'View' }).click() // Open blog details
+            const likeButton = await page.locator('button', { hasText: 'like' })
+            await likeButton.click()
+  
+            // Check that the likes count increased
+            const likeCount = await page.locator('.likes-count')
+            await expect(likeCount).toHaveText('1')
+        })
+
+        test('the user who added the blog can delete it', async ({ page }) => {
+            await page.locator('button', { hasText: 'Create new blog' }).click()
+        
+            await page.fill('input[placeholder="Enter blog title"]', 'Blog to be deleted')
+            await page.fill('input[placeholder="Enter blog author"]', 'Author to delete')
+            await page.fill('input[placeholder="Enter blog URL"]', 'http://deletetesturl.com')
+        
+            await page.locator('#createBlog').click()
+        
+            const successMessage = await page.locator('.success')
+            await expect(successMessage)
+              .toHaveText(/Blog "Blog to be deleted" by Author to delete added successfully/)
+        
+            // Show blog details to access the delete button
+            await page.locator('button', { hasText: 'View' }).click()
+        
+            // Open the dialog to accept the deletion
+            page.on('dialog', async dialog => {
+              expect(dialog.type()).toBe('confirm')  // Ensure it's a confirm dialog
+              await dialog.accept()
+            })
+
+            // Click the delete button and accept the dialog with the confirmation
+            await page.locator('button', { hasText: 'Delete' }).click()
+        
+            // Ensure the blog has been removed from the list
+            const blog = await page.locator('span', { hasText: 'Blog to be deleted' })
+            await expect(blog).not.toBeVisible()
+        })
+        
     })
 })
