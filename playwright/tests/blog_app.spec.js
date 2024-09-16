@@ -160,5 +160,113 @@ describe('Blog app', () => {
             await page.locator('button', { hasText: 'View' }).click();
             await expect(deleteButton).not.toBeVisible();
         });
+
+        // test('blogs are ordered by likes', async ({ page }) => {
+        //     // Create three blogs with different amounts of likes
+        //     await page.locator('button', { hasText: 'Create new blog' }).click();
+        //     await page.fill('input[placeholder="Enter blog title"]', 'First Blog');
+        //     await page.fill('input[placeholder="Enter blog author"]', 'First Author');
+        //     await page.fill('input[placeholder="Enter blog URL"]', 'http://firstblog.com');
+        //     await page.locator('#createBlog').click();
+
+        
+        //     await page.locator('button', { hasText: 'Create new blog' }).click();
+        //     await page.fill('input[placeholder="Enter blog title"]', 'Second Blog');
+        //     await page.fill('input[placeholder="Enter blog author"]', 'Second Author');
+        //     await page.fill('input[placeholder="Enter blog URL"]', 'http://secondblog.com');
+        //     await page.locator('#createBlog').click();
+
+
+        //     // Give likes to the blogs
+        //     // First blog with 1 like
+        //     const firstBlog = await page.locator('.blog', { hasText: 'First Blog' }).first();
+        //     await firstBlog.locator('button', { hasText: 'View' }).click();
+        //     await page.waitForSelector('.blog .likes-count');
+        //     await firstBlog.locator('button', { hasText: 'like' }).click();
+        //     await page.waitForTimeout(2000);
+        
+        //     // Second blog with 3 likes
+        //     const secondBlog = await page.locator('.blog', { hasText: 'Second Blog' }).first();
+        //     await secondBlog.locator('button', { hasText: 'View' }).click();
+        //     await page.waitForSelector('.blog .likes-count');
+        //     await secondBlog.locator('button', { hasText: 'like' }).click();
+        //     await page.waitForTimeout(2000);
+        //     await secondBlog.locator('button', { hasText: 'like' }).click();
+        //     await page.waitForTimeout(2000);
+        //     await secondBlog.locator('button', { hasText: 'like' }).click();
+        //     await page.waitForTimeout(2000);
+        
+        //     // Get the likes count for each blog
+        //     const blogLikes = await page.$$eval('.likes-count', likes => 
+        //         likes.map(likeElement => Number(likeElement.textContent))
+        //     );
+
+        //     // Ensure the blogs are ordered by likes
+        //     expect(blogLikes).toEqual([...blogLikes].sort((a, b) => b - a));
+        // });
+
+        test('blogs are ordered by likes', async ({ page }) => {
+            // Create three blogs with different amounts of likes
+            await page.locator('button', { hasText: 'Create new blog' }).click();
+            await page.fill('input[placeholder="Enter blog title"]', 'First Blog');
+            await page.fill('input[placeholder="Enter blog author"]', 'First Author');
+            await page.fill('input[placeholder="Enter blog URL"]', 'http://firstblog.com');
+            await page.locator('#createBlog').click();
+            
+            await page.waitForTimeout(2000); // Wait for the blog to appear
+        
+            await page.locator('button', { hasText: 'Create new blog' }).click();
+            await page.fill('input[placeholder="Enter blog title"]', 'Second Blog');
+            await page.fill('input[placeholder="Enter blog author"]', 'Second Author');
+            await page.fill('input[placeholder="Enter blog URL"]', 'http://secondblog.com');
+            await page.locator('#createBlog').click();
+            
+            await page.waitForTimeout(2000); // Wait for the blog to appear
+        
+            await page.locator('button', { hasText: 'Create new blog' }).click();
+            await page.fill('input[placeholder="Enter blog title"]', 'Third Blog');
+            await page.fill('input[placeholder="Enter blog author"]', 'Third Author');
+            await page.fill('input[placeholder="Enter blog URL"]', 'http://thirdblog.com');
+            await page.locator('#createBlog').click();
+            
+            await page.waitForTimeout(2000); // Wait for the blog to appear
+        
+            // Give likes to the blogs
+            // First blog with 1 like
+            const firstBlog = await page.locator('.blog', { hasText: 'First Blog' }).first();
+            await firstBlog.locator('button', { hasText: 'View' }).click();
+            await page.waitForSelector('.blog .likes-count');
+            await firstBlog.locator('button', { hasText: 'like' }).click();
+            await page.waitForTimeout(2000); // Wait for like to be processed
+        
+            // Second blog with 3 likes
+            const secondBlog = await page.locator('.blog', { hasText: 'Second Blog' }).first();
+            await secondBlog.locator('button', { hasText: 'View' }).click();
+            await page.waitForSelector('.blog .likes-count');
+            await secondBlog.locator('button', { hasText: 'like' }).click();
+            await page.waitForTimeout(2000); // Wait for like to be processed
+            await secondBlog.locator('button', { hasText: 'like' }).click();
+            await page.waitForTimeout(2000); // Wait for like to be processed
+            await secondBlog.locator('button', { hasText: 'like' }).click();
+            await page.waitForTimeout(2000); // Wait for like to be processed
+        
+            // Third blog with 2 likes
+            const thirdBlog = await page.locator('.blog', { hasText: 'Third Blog' }).first();
+            await thirdBlog.locator('button', { hasText: 'View' }).click();
+            await page.waitForSelector('.blog .likes-count');
+            await thirdBlog.locator('button', { hasText: 'like' }).click();
+            await page.waitForTimeout(2000); // Wait for like to be processed
+            await thirdBlog.locator('button', { hasText: 'like' }).click();
+            await page.waitForTimeout(2000); // Wait for like to be processed
+        
+            // Get the likes count for each blog
+            const blogLikes = await page.$$eval('.likes-count', likes => 
+                likes.map(likeElement => Number(likeElement.textContent))
+            );
+        
+            // Ensure the blogs are ordered by likes
+            expect(blogLikes).toEqual([...blogLikes].sort((a, b) => b - a));
+        });
+        
     })
 })
